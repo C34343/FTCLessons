@@ -15,8 +15,11 @@ public class FieldCentric extends OpMode {
     private static DcMotor leftBack;
     private static DcMotor rightFront;
     private static DcMotor rightBack;
+    IMU Gyro = null;
+    Orientation Angles = null;
+    double offset = 0.0; //If you use offset and is greater than 0 make it negative
 
-    public void caclulateDrive(double forward, double slide, double turn, double heading) {
+    public void calculateDrive(double forward, double slide, double turn, double heading) {
         double Temp = forward * Math.cos(heading) + slide * Math.sin(heading);
         slide = (-forward * Math.sin(heading)) + slide * Math.cos(heading);
         forward = Temp;
@@ -37,14 +40,13 @@ public class FieldCentric extends OpMode {
             rightBackPower = rightBackPower / biggestInput;
         }
 
-        return [leftFrontPower, leftBackPower, rightFrontPower, rightBackPower]
+        return [leftFrontPower, leftBackPower, rightFrontPower, rightBackPower];
 
     }
   
     // performs once when you hit the init button on the drivers hub
     @Override
-    public void init() {
-        // Finds the hardware who's configured name matches the name in the string
+    public void init() {// Finds the hardware who's configured name matches the name in the string
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
@@ -53,6 +55,17 @@ public class FieldCentric extends OpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
+				Gyro = hardwareMap.get(IMU.class, "imu");
+				Orientation orientation =
+                new Orientation(AxesReference.INTRINSIC,
+                        AxesOrder.ZYX,
+                        AngleUnit.DEGREES,
+                        180, 0, 0, 0);
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(orientation);
+        IMU.Parameters parameters = new IMU.Parameters(orientationOnRobot);
+        Gyro.initialize(parameters);
+
+
         // Displays on the drivers hub when it finishes initialization
         telemetry.addData("status", "Initialized");
     }
@@ -60,26 +73,6 @@ public class FieldCentric extends OpMode {
     // called constantly while the program is running
     @Override
     public void loop() {
-        double forwards = -gamepad1.left_stick_y;
-        double horizontal = gamepad1.left_stick_x;
-        double turning = gamepad1.right_stick_x;
-
-        double leftFrontPower = forwards + horizontal + turning;
-        double leftBackPower = forwards - horizontal + turning;
-        double rightFrontPower = forwards - horizontal - turning;
-        double rightBackPower = forwards + horizontal - turning;
-
-        leftFront.setPower(leftFrontPower);
-        leftBack.setPower(leftBackPower);
-        rightFront.setPower(rightFrontPower);
-        rightBack.setPower(rightBackPower);
-
-        telemetry.addData("Motors", "leftFrontWheel:" + leftFront.getPower());
-        telemetry.addData("Motors", "leftBackWheel:" + leftBack.getPower());
-        telemetry.addData("Motors", "rightFrontWheel:" + rightFront.getPower());
-        telemetry.addData("Motors", "rightBackWheel:" + rightBack.getPower());
-        telemetry.addData("Input", "left y:" + gamepad1.left_stick_y +
-                ", left x:" + gamepad1.left_stick_x +
-                ", right x:" + gamepad1.right_stick_x);
+        
     }
 }
