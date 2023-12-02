@@ -19,7 +19,7 @@ public class FieldCentric extends OpMode {
     Orientation Angles = null;
     double offset = 0.0; //If you use offset and is greater than 0 make it negative
 
-    public void calculateDrive(double forward, double slide, double turn, double heading) {
+    public double[] calculateDrive(double forward, double slide, double turn, double heading) {
         double Temp = forward * Math.cos(heading) + slide * Math.sin(heading);
         slide = (-forward * Math.sin(heading)) + slide * Math.cos(heading);
         forward = Temp;
@@ -40,7 +40,9 @@ public class FieldCentric extends OpMode {
             rightBackPower = rightBackPower / biggestInput;
         }
 
-        return [leftFrontPower, leftBackPower, rightFrontPower, rightBackPower];
+        double[] powers = {leftFrontPower, leftBackPower, rightFrontPower, rightBackPower};
+
+        return powers;
 
     }
   
