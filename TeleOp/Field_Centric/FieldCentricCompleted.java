@@ -98,7 +98,7 @@ public class FieldCentricCompleted extends OpMode {
         double roll = robotOrientation.getRoll(AngleUnit.RADIANS);
         double GyroRadians = -yaw + offset;
 
-        powers = calculateDrive(forwards, horizontal, turning, GyroRadians);
+        double[] powers = calculateDrive(forwards, horizontal, turning, GyroRadians);
 
         leftFront.setPower(powers[0]);
         leftBack.setPower(powers[1]);
